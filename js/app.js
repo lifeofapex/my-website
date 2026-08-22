@@ -421,10 +421,8 @@ $(window).on("load", function() {
   if(animatedHeadline.length){
     var typed = new Typed('#typed', {
       stringsElement: '#typed-strings',
-      loop: true,
-      typeSpeed: 60,
-      backSpeed: 30,
-      backDelay: 2500
+      loop: false,
+      typeSpeed: 60
     });
   }
   // --------------------------------------------- //

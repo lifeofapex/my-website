@@ -465,27 +465,27 @@ img {
 /* Elements - Typography Start */
 /* ------------------------------------------------*/
 h1 {
-  font: normal 300 5.6rem var(--_font-accent);
+  font: normal 300 4.8rem var(--_font-accent);
   color: var(--t-bright);
 }
 @media only screen and (min-width: 768px) {
   h1 {
-    font-size: 9rem;
+    font-size: 7.6rem;
   }
 }
 @media only screen and (min-width: 1200px) {
   h1 {
-    font-size: 11rem;
+    font-size: 9rem;
   }
 }
 @media only screen and (min-width: 1400px) {
   h1 {
-    font-size: 12.6rem;
+    font-size: 10.2rem;
   }
 }
 @media only screen and (min-width: 1600px) {
   h1 {
-    font-size: 16rem;
+    font-size: 12.8rem;
   }
 }
 
@@ -569,6 +569,30 @@ h2 {
 @media only screen and (min-width: 1600px) {
   h2 {
     font-size: 14rem;
+  }
+}
+
+h2.h2--sm {
+  font-size: 3.4rem;
+}
+@media only screen and (min-width: 768px) {
+  h2.h2--sm {
+    font-size: 4.4rem;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  h2.h2--sm {
+    font-size: 5rem;
+  }
+}
+@media only screen and (min-width: 1400px) {
+  h2.h2--sm {
+    font-size: 5.6rem;
+  }
+}
+@media only screen and (min-width: 1600px) {
+  h2.h2--sm {
+    font-size: 6.4rem;
   }
 }
 
@@ -2783,7 +2807,7 @@ form textarea:required:valid {
     position: absolute;
     bottom: 0;
     left: 0;
-    padding-bottom: 9rem;
+    padding-bottom: 13rem;
   }
   .headline.headline-centered {
     bottom: auto;
@@ -2800,12 +2824,12 @@ form textarea:required:valid {
 }
 @media only screen and (min-width: 1400px) {
   .headline.headline-95-desktop {
-    padding-bottom: 9.9rem;
+    padding-bottom: 14rem;
   }
 }
 @media only screen and (min-width: 1600px) {
   .headline.headline-95-desktop {
-    padding-bottom: 11.3rem;
+    padding-bottom: 16rem;
   }
 }
 

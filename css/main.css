@@ -6939,3 +6939,32 @@ form textarea:required:valid {
 /* ------------------------------------------------*/
 /* Features Contact Data End */
 /* ------------------------------------------------*/
+/* ------------------------------------------------*/
+/* Portfolio Card Background Video Start */
+/* ------------------------------------------------*/
+/* A <video class="card-video"> inside a .portfolio-stack__inner card plays
+   behind the title/description. The card's CSS background image stays
+   underneath as the fallback while loading, on error, or with reduced motion. */
+.card-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+}
+.card-video.is-hidden {
+  display: none;
+}/* Keep the video/text layering inside each card, so one card's text
+   can't paint over the cards that stack on top of it */
+.portfolio-stack__inner {
+  isolation: isolate;
+}
+.portfolio-stack__inner .portfolio-stack__descr {
+  z-index: 1;
+}
+/* ------------------------------------------------*/
+/* Portfolio Card Background Video End */
+/* ------------------------------------------------*/

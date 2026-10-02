@@ -634,3 +634,96 @@ window.addEventListener('DOMContentLoaded', () => {
 // --------------------------------------------- //
 // Color Switch End
 // --------------------------------------------- //
+// --------------------------------------------- //
+// Card Background Videos Start
+// --------------------------------------------- //
+// Autoplaying, muted, looping videos on portfolio cards. Plays only while
+// on screen, and stays paused (showing the poster/background image) for
+// visitors who prefer reduced motion or have Data Saver on.
+//
+// Each video can have up to three cuts, picked from the card's real shape
+// (width / height), so only one file is downloaded and it is swapped only if
+// the shape changes enough (e.g. a phone is rotated):
+//   below 1.2  -> data-src-portrait / data-poster-portrait  (phones)
+//   below 2.2  -> data-src-tablet   / data-poster-tablet    (tablets, small laptops)
+//   otherwise  -> data-src          / data-poster           (desktop)
+// A missing cut falls back to the wide one.
+(function () {
+  const videos = document.querySelectorAll('.card-video');
+  if (!videos.length) return;
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const saveData = !!(navigator.connection && navigator.connection.saveData);
+  const CUTS = [['Portrait', 1.2], ['Tablet', 2.2]];
+
+  const tryPlay = (video) => {
+    if (reduceMotion.matches || !video.getAttribute('src')) return;
+    const promise = video.play();
+    if (promise) promise.catch(() => {});
+  };
+
+  const setSource = (video) => {
+    const card = video.parentElement;
+    const ratio = card.clientWidth / card.clientHeight;
+    const cut = (CUTS.find(([name, below]) => ratio < below && video.dataset['src' + name]) || [''])[0];
+    const poster = video.dataset['poster' + cut] || video.dataset.poster;
+    if (poster && video.getAttribute('poster') !== poster) video.setAttribute('poster', poster);
+
+    if (saveData || reduceMotion.matches) return; // poster only
+    const src = video.dataset['src' + cut];
+    if (!src || video.getAttribute('src') === src) return;
+
+    // keep the playhead when swapping cuts, so a rotation doesn't restart the video
+    const resumeAt = video.currentTime;
+    const wasPlaying = !video.paused;
+    video.classList.remove('is-hidden');
+    video.setAttribute('src', src);
+    if (resumeAt) {
+      video.addEventListener('loadedmetadata', () => { video.currentTime = resumeAt % (video.duration || Infinity); }, { once: true });
+    }
+    if (wasPlaying) tryPlay(video);
+  };
+
+  videos.forEach((video) => {
+    // Required for autoplay on iOS/Chrome; set in JS too in case the attribute is forgotten.
+    video.muted = true;
+    video.playsInline = true;
+
+    // If the file is missing or unsupported, fall back to the card's background image.
+    video.addEventListener('error', () => video.classList.add('is-hidden'));
+
+    if (reduceMotion.matches) {
+      video.removeAttribute('autoplay');
+      video.pause();
+    }
+    setSource(video);
+  });
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => videos.forEach(setSource), 200);
+  });
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.isIntersecting ? tryPlay(entry.target) : entry.target.pause();
+      });
+    }, { threshold: 0.15 });
+    videos.forEach((video) => observer.observe(video));
+  } else {
+    videos.forEach(tryPlay);
+  }
+
+  reduceMotion.addEventListener('change', () => {
+    videos.forEach((video) => {
+      if (reduceMotion.matches) return video.pause();
+      setSource(video); // the source was never attached while motion was reduced
+      tryPlay(video);
+    });
+  });
+})();
+// --------------------------------------------- //
+// Card Background Videos End
+// --------------------------------------------- //

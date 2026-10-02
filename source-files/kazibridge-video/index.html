@@ -1,0 +1,285 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+  // ?layout=portrait -> 1080x1350 phone cut, ?layout=tablet -> 1440x1000 tablet cut,
+  // default -> 1920x800 wide cut
+  window.LAYOUT = new URLSearchParams(location.search).get('layout') || 'wide';
+  window.PORTRAIT = LAYOUT === 'portrait';
+  window.TABLET = LAYOUT === 'tablet';
+  document.documentElement.classList.add(LAYOUT);
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#07090d; --cyan:#41ddf5; --blue:#1677e5; --ink:#f2f5f8; --mute:rgba(242,245,248,.62); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1920px; height:800px; overflow:hidden; background:var(--bg); }
+  body { font-family:"Urbanist",sans-serif; color:var(--ink); -webkit-font-smoothing:antialiased; }
+  #stage { position:relative; width:1920px; height:800px; overflow:hidden; background:var(--bg); }
+  .scene { position:absolute; inset:0; opacity:0; overflow:hidden; }
+  .bleed { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+  /* ambient glow */
+  .glow { position:absolute; border-radius:50%; filter:blur(120px); opacity:.35; }
+
+  /* stats */
+  .stats { position:absolute; left:880px; top:0; bottom:0; display:flex; align-items:center; gap:110px; }
+  .stat__num { font-size:190px; font-weight:300; line-height:.9; letter-spacing:-.04em; color:var(--ink); }
+  .stat__num em { font-style:normal; color:var(--cyan); }
+  .stat__txt { margin-top:26px; font-size:30px; font-weight:400; line-height:1.3; color:var(--mute); max-width:400px; }
+  .src { position:absolute; right:96px; bottom:64px; font-size:18px; letter-spacing:.08em; color:rgba(242,245,248,.38); text-transform:uppercase; }
+  .hl { position:absolute; left:880px; top:150px; font-size:26px; letter-spacing:.02em; color:var(--mute); }
+
+  /* framed shots */
+  .persp { position:absolute; inset:0; perspective:1800px; }
+  .card { position:absolute; border-radius:22px; overflow:hidden; box-shadow:0 60px 120px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06); background:#fff; }
+  .card img { display:block; width:100%; height:100%; object-fit:cover; }
+
+  /* phones */
+  .track { position:absolute; left:760px; top:90px; display:flex; gap:44px; }
+  .phone { width:300px; height:625px; flex:none; border-radius:44px; overflow:hidden; box-shadow:0 50px 90px rgba(0,0,0,.55); }
+  .phone img { display:block; width:100%; height:100%; }
+
+  /* outcome */
+  .outcome { position:absolute; left:880px; top:0; bottom:0; display:flex; flex-direction:column; justify-content:center; }
+  .outcome h2 { font-size:104px; font-weight:300; line-height:1.02; letter-spacing:-.03em; }
+  .outcome h2 span { display:block; }
+  .outcome h2 .c { color:var(--cyan); }
+  .outcome ul { list-style:none; margin-top:48px; display:flex; gap:56px; }
+  .outcome li { font-size:26px; color:var(--mute); max-width:420px; line-height:1.35; padding-left:22px; border-left:2px solid var(--cyan); }
+
+  /* left-bottom shade so the homepage card title/description stay readable */
+  #shade { position:absolute; inset:0; pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(7,9,13,.92) 0%, rgba(7,9,13,.7) 30%, rgba(7,9,13,0) 52%),
+      linear-gradient(0deg, rgba(7,9,13,.55) 0%, rgba(7,9,13,0) 45%); }
+
+  /* chapter label */
+  #label { position:absolute; left:96px; top:72px; display:flex; align-items:center; gap:22px; font-size:22px; letter-spacing:.22em; text-transform:uppercase; }
+  #label .n { color:var(--cyan); font-weight:500; }
+  #label .bar { width:56px; height:1px; background:rgba(242,245,248,.45); }
+  #label .t { color:var(--ink); font-weight:400; }
+  #progress { position:absolute; left:96px; top:118px; width:240px; height:2px; background:rgba(242,245,248,.14); }
+  #progress i { display:block; height:100%; width:100%; background:var(--cyan); transform-origin:left; transform:scaleX(0); }
+
+  /* ---------- portrait cut (1080x1350) for phone-sized cards ----------
+     Shown at roughly 1/3 scale on phones, so type is much larger.
+     No card title sits over the video on phones, so content is centred and the shade is off. */
+  html.portrait, html.portrait body, html.portrait #stage { width:1080px; height:1350px; }
+  /* only a top fade, so the chapter label stays readable over light scenes */
+  html.portrait #shade { background:linear-gradient(180deg, rgba(7,9,13,.8) 0%, rgba(7,9,13,0) 20%); }
+  html.portrait .glow { left:140px !important; top:380px !important; width:800px !important; height:700px !important; }
+
+  html.portrait #label { left:90px; top:96px; font-size:34px; gap:26px; }
+  html.portrait #label .bar { width:70px; height:2px; }
+  html.portrait #progress { left:90px; top:166px; width:360px; height:3px; }
+
+  html.portrait .hl { left:90px; right:90px; top:260px; font-size:44px; line-height:1.3; }
+  html.portrait .stats { left:90px; right:90px; top:500px; bottom:auto; flex-direction:column; align-items:flex-start; gap:70px; }
+  html.portrait .stat__num { font-size:230px; }
+  html.portrait .stat__txt { margin-top:18px; font-size:44px; max-width:860px; }
+  html.portrait .src { left:90px; right:auto; bottom:80px; font-size:24px; }
+
+  html.portrait #flowcard { left:60px !important; top:360px !important; width:1700px !important; height:708px !important; }
+
+  html.portrait .track { left:90px; top:250px; gap:56px; }
+  html.portrait .phone { width:480px; height:1000px; border-radius:70px; }
+
+  html.portrait .dash { width:860px !important; height:562px !important; }
+  html.portrait #dash-users { left:190px !important; top:300px !important; }
+  html.portrait #dash-payments { left:150px !important; top:450px !important; }
+  html.portrait #dash-admin { left:110px !important; top:600px !important; }
+
+  html.portrait .outcome { left:90px; right:90px; }
+  html.portrait .outcome h2 { font-size:132px; }
+  html.portrait .outcome ul { flex-direction:column; gap:34px; margin-top:64px; }
+  html.portrait .outcome li { font-size:42px; max-width:880px; padding-left:28px; border-left-width:3px; }
+
+  /* ---------- tablet cut (1440x1000) for 768-1199px cards ----------
+     The card's title box covers the bottom-left ~60% on tablets, and wider tablet cards crop
+     the top/bottom (up to ~170px each), narrower ones the sides (~120px each).
+     So content lives in the top-right, inside x 140-1300 / y 180-820. */
+  html.tablet, html.tablet body, html.tablet #stage { width:1440px; height:1000px; }
+  html.tablet .glow { left:700px !important; top:250px !important; width:700px !important; height:600px !important; }
+
+  html.tablet #label { left:140px; top:200px; font-size:28px; gap:22px; }
+  html.tablet #progress { left:140px; top:252px; width:280px; }
+
+  html.tablet .hl { left:640px; right:140px; top:250px; font-size:30px; line-height:1.3; }
+  html.tablet .stats { left:640px; top:370px; bottom:auto; align-items:flex-start; gap:60px; }
+  html.tablet .stat__num { font-size:150px; }
+  html.tablet .stat__txt { margin-top:16px; font-size:28px; max-width:300px; }
+  html.tablet .src { left:640px; right:auto; bottom:190px; font-size:18px; }
+
+  html.tablet #flowcard { left:560px !important; top:290px !important; width:1000px !important; height:417px !important; }
+
+  html.tablet .track { left:600px; top:290px; gap:36px; }
+  html.tablet .phone { width:254px; height:529px; border-radius:37px; }
+
+  html.tablet .dash { width:700px !important; height:457px !important; }
+  html.tablet #dash-users { left:740px !important; top:220px !important; }
+  html.tablet #dash-payments { left:670px !important; top:290px !important; }
+  html.tablet #dash-admin { left:600px !important; top:360px !important; }
+
+  html.tablet .outcome { left:640px; right:140px; }
+  html.tablet .outcome h2 { font-size:96px; }
+  html.tablet .outcome ul { flex-direction:column; gap:22px; margin-top:40px; }
+  html.tablet .outcome li { font-size:27px; max-width:620px; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <section class="scene" id="s-problem">
+    <div class="glow" style="width:700px;height:700px;left:1100px;top:60px;background:var(--blue)"></div>
+    <div class="hl">Uganda's vocational graduates have the skills, but no way to be found</div>
+    <div class="stats">
+      <div class="stat"><div class="stat__num"><span data-count="30">0</span><em>%</em></div><div class="stat__txt">of institutionally qualified youth couldn't find work</div></div>
+      <div class="stat"><div class="stat__num"><span data-count="90">0</span><em>%+</em></div><div class="stat__txt">of Ugandans work in the informal sector</div></div>
+    </div>
+    <div class="src">Sources: EPRC Uganda · Ulandssekretariatet, 2022</div>
+  </section>
+
+  <section class="scene" id="s-flow">
+    <div class="glow" style="width:800px;height:600px;left:900px;top:200px;background:var(--cyan);opacity:.18"></div>
+    <div class="persp"><div class="card" id="flowcard" style="left:780px;top:165px;width:1080px;height:450px"><img src="assets/flow.png"></div></div>
+  </section>
+
+  <section class="scene" id="s-system"><img class="bleed" id="sysimg" src="assets/system.png"></section>
+
+  <section class="scene" id="s-mobile" style="opacity:1">
+    <div class="glow" style="width:900px;height:500px;left:900px;top:300px;background:var(--blue);opacity:.3"></div>
+    <div class="track" id="track">
+      <div class="phone"><img src="assets/p-category.png"></div>
+      <div class="phone"><img src="assets/p-dashboard.png"></div>
+      <div class="phone"><img src="assets/p-jobs.png"></div>
+      <div class="phone"><img src="assets/p-nav.png"></div>
+      <div class="phone"><img src="assets/p-home.png"></div>
+      <div class="phone"><img src="assets/p-browse.png"></div>
+      <div class="phone"><img src="assets/p-profile.png"></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-admin">
+    <div class="glow" style="width:900px;height:600px;left:1000px;top:150px;background:var(--blue);opacity:.35"></div>
+    <div class="persp">
+      <div class="card dash" id="dash-users" style="left:1010px;top:70px;width:900px;height:588px"><img src="assets/d-users.png"></div>
+      <div class="card dash" id="dash-payments" style="left:900px;top:130px;width:900px;height:588px"><img src="assets/d-payments.png"></div>
+      <div class="card dash" id="dash-admin" style="left:780px;top:190px;width:900px;height:588px"><img src="assets/d-admin.png"></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-outcome">
+    <div class="glow" style="width:800px;height:700px;left:1150px;top:50px;background:var(--cyan);opacity:.16"></div>
+    <div class="outcome">
+      <h2><span>Verified pros.</span><span class="c">Trusted hires.</span></h2>
+      <ul>
+        <li>Artisans set up profiles in minutes and got noticed</li>
+        <li>Clients hired with confidence through verified profiles</li>
+      </ul>
+    </div>
+  </section>
+
+  <div id="shade"></div>
+  <div id="label"><span class="n">00</span><span class="bar"></span><span class="t">KaziBridge · Case study</span></div>
+  <div id="progress"><i></i></div>
+</div>
+
+<script src="gsap.min.js"></script>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const DUR = 24;
+const tl = gsap.timeline({ paused: true });
+
+// chapter label swaps
+const chapters = [
+  [0, '00', 'KaziBridge · Case study'],
+  [4.2, '01', 'The problem'],
+  [7.8, '02', 'User flows'],
+  [10.8, '03', 'Design system'],
+  [13.6, '04', 'Admin dashboard'],
+  [17.2, '05', 'Outcome'],
+  [20.9, '00', 'KaziBridge · Case study'],
+];
+chapters.forEach(([t, n, txt], i) => {
+  if (i > 0) tl.to('#label', { opacity: 0, x: -12, duration: .25, ease: 'power2.in' }, t - .25);
+  if (i > 0) tl.fromTo('#label', { opacity: 0, x: 12 }, { opacity: 1, x: 0, duration: .45, ease: 'power3.out', immediateRender: false }, t);
+});
+tl.fromTo('#progress i', { scaleX: 0 }, { scaleX: 1, duration: DUR, ease: 'none' }, 0);
+
+const fadeIn = (sel, t, d = .6) => tl.to(sel, { opacity: 1, duration: d, ease: 'power2.out' }, t);
+const fadeOut = (sel, t, d = .6) => tl.to(sel, { opacity: 0, duration: d, ease: 'power2.in' }, t);
+
+// Cold open: the app screens are already drifting on frame 0, so the card reads as video
+// straight away. The track moves at one constant speed across the loop seam (end -> start).
+const SPEED = PORTRAIT ? 420 : TABLET ? 300 : 312; // px per second
+const TRACK_HOME = PORTRAIT || TABLET ? 0 : 60;    // track x on frame 0
+const RETURN_AT = 20.9;       // when the phones come back in at the end
+tl.fromTo('#track', { x: TRACK_HOME }, { x: TRACK_HOME - SPEED * 4.2, duration: 4.2, ease: 'none' }, 0);
+fadeOut('#s-mobile', 3.8, .4);
+
+// 1 — problem
+fadeIn('#s-problem', 4.1, .5);
+tl.from('#s-problem .hl', { y: 20, opacity: 0, duration: .7, ease: 'power3.out' }, 4.2);
+$$('#s-problem .stat').forEach((el, i) => {
+  tl.from(el, { y: 50, opacity: 0, duration: .9, ease: 'power3.out' }, 4.3 + i * .3);
+  const num = el.querySelector('[data-count]'), obj = { v: 0 };
+  tl.to(obj, { v: +num.dataset.count, duration: 1.6, ease: 'power2.out', onUpdate: () => num.textContent = Math.round(obj.v) }, 4.3 + i * .3);
+});
+tl.from('#s-problem .src', { opacity: 0, duration: .6 }, 5.0);
+tl.to('#s-problem .stats', { x: -30, duration: 3.6, ease: 'none' }, 4.1);
+fadeOut('#s-problem', 7.3);
+
+// 2 — flows
+fadeIn('#s-flow', 7.6);
+tl.fromTo('#flowcard',
+  PORTRAIT || TABLET ? { rotateY: -12, rotateX: 6, x: 40, scale: .94 } : { rotateY: -18, rotateX: 8, x: 60, scale: .92 },
+  // portrait: the wide chart is bigger than the frame, so it pans across both flows
+  { ...(PORTRAIT ? { rotateY: -4, rotateX: 2, x: -660 } : TABLET ? { rotateY: -4, rotateX: 2, x: -220 } : { rotateY: -6, rotateX: 3, x: -40 }), scale: 1, duration: 3.4, ease: 'power1.out' }, 7.6);
+fadeOut('#s-flow', 10.4);
+
+// 3 — design system
+fadeIn('#s-system', 10.6);
+tl.fromTo('#sysimg', { scale: 1.18, x: 80, y: 20 }, { scale: 1.04, x: -40, y: 0, duration: 3.2, ease: 'power1.out' }, 10.6);
+fadeOut('#s-system', 13.1, .45);
+
+// 4 — admin
+fadeIn('#s-admin', 13.5, .4);
+$$('#s-admin .dash').forEach((d, i) => {
+  tl.fromTo(d, { rotateY: -24, rotateX: 6, x: 220, opacity: 0 }, { rotateY: -14, rotateX: 4, x: 0, opacity: 1, duration: 1.2, ease: 'power3.out' }, 13.6 + i * .22);
+});
+tl.to('#s-admin .persp', { x: -60, duration: 3.6, ease: 'none' }, 13.6);
+fadeOut('#s-admin', 16.7);
+
+// 5 — outcome
+fadeIn('#s-outcome', 17.1, .4);
+tl.from('#s-outcome h2 span', { y: 70, opacity: 0, duration: .9, ease: 'power3.out', stagger: .18 }, 17.2);
+tl.from('#s-outcome li', { y: 24, opacity: 0, duration: .7, ease: 'power3.out', stagger: .15 }, 17.8);
+fadeOut('#s-outcome', 20.4, .5);
+
+// back to the app screens: they glide in from the right and land exactly on frame 0
+tl.fromTo('#s-mobile', { opacity: 0 }, { opacity: 1, duration: .4, ease: 'power2.out', immediateRender: false }, RETURN_AT);
+tl.fromTo('#track', { x: TRACK_HOME + SPEED * (DUR - RETURN_AT) }, { x: TRACK_HOME, duration: DUR - RETURN_AT, ease: 'none', immediateRender: false }, RETURN_AT);
+$$('#track .phone').forEach((p, i) => {
+  tl.fromTo(p, { y: 200, opacity: 0 }, { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', immediateRender: false }, RETURN_AT + .1 + i * .1);
+});
+tl.to({}, { duration: 0 }, DUR);
+
+window.DUR = DUR;
+window.seek = t => {
+  // Counters change in whole digits, so motion blur (blending pairs of 120fps frames)
+  // would ghost two numbers on top of each other. Take their value from the start of
+  // each 1/60s step, so both frames in a blended pair show the same digits.
+  tl.seek(Math.floor(t * 60 + 1e-6) / 60, false);
+  const counts = $$('[data-count]').map(el => el.textContent);
+  tl.seek(t, false);
+  $$('[data-count]').forEach((el, i) => el.textContent = counts[i]);
+  // label text follows the playhead (set here so any frame can be rendered on its own)
+  const [, n, txt] = chapters.filter(c => c[0] <= t + 1e-6).at(-1);
+  $('#label .n').textContent = n; $('#label .t').textContent = txt;
+};
+window.ready = Promise.all([document.fonts.ready, ...$$('img').map(i => i.decode())]);
+</script>
+</body>
+</html>

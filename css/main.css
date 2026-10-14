@@ -7004,3 +7004,120 @@ form textarea:required:valid {
 /* ------------------------------------------------*/
 /* Hero Typed Text End */
 /* ------------------------------------------------*/
+
+/* ------------------------------------------------*/
+/* AI Builds Start */
+/* ------------------------------------------------*/
+.ai-builds__intro {
+  margin-top: 2.4rem;
+  max-width: 62rem;
+  color: var(--t-medium);
+}
+.ai-builds__grid {
+  row-gap: 2.4rem;
+  margin: 0 -1.2rem;
+}
+.ai-builds__grid > .grid-item {
+  padding: 0 1.2rem;
+}
+.ai-build-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--base);
+  border: 1px solid var(--stroke-elements);
+  border-radius: var(--_radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s;
+}
+.ai-build-card:hover,
+.ai-build-card:focus-visible {
+  transform: translateY(-6px);
+  border-color: var(--t-bright);
+}
+.ai-build-card__image {
+  aspect-ratio: 16 / 11;
+  overflow: hidden;
+}
+.ai-build-card__image img,
+.ai-build-card__image video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.ai-build-card:hover .ai-build-card__image img {
+  transform: scale(1.04);
+}
+.ai-build-card__descr {
+  padding: 2.4rem 2.6rem 2.8rem;
+}
+.ai-build-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1.6rem;
+}
+.ai-build-card__tag {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--stroke-elements);
+  border-radius: 99px;
+  font-size: 1.3rem;
+  color: var(--t-medium);
+}
+.ai-build-card__title {
+  font: normal 400 3rem var(--_font-accent);
+  color: var(--t-bright);
+}
+.ai-build-card__text {
+  margin-top: 1rem;
+  font-size: 1.6rem;
+  color: var(--t-medium);
+}
+.ai-build__video video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* case study body */
+.ai-build__body p + .ai-build__list,
+.ai-build__body .ai-build__list + p {
+  margin-top: 2rem;
+}
+.ai-build__list {
+  margin: 0;
+  padding-left: 2.2rem;
+  list-style: disc;
+  font: normal var(--font-weight-base) 1.8rem var(--_font-default);
+  color: var(--t-bright);
+}
+.ai-build__list li {
+  padding-left: 0.4rem;
+  line-height: 1.6;
+}
+/* match the theme's responsive paragraph sizes */
+@media only screen and (min-width: 1200px) {
+  .ai-build__list {
+    font-size: 2rem;
+  }
+}
+@media only screen and (min-width: 1400px) {
+  .ai-build__list {
+    font-size: 2.2rem;
+  }
+}
+.ai-build__list li::marker {
+  color: var(--t-muted);
+}
+.ai-build__list li + li {
+  margin-top: 1rem;
+}
+.ai-build__list b {
+  font-weight: 600;
+  color: var(--t-bright);
+}
+/* ------------------------------------------------*/
+/* AI Builds End */
+/* ------------------------------------------------*/

@@ -47,7 +47,8 @@ gsap.registerPlugin(ScrollTrigger);
 // Loader & Loading Animation Start
 // --------------------------------------------- //
 const content = document.querySelector('body');
-const imgLoad = imagesLoaded(content);
+// lazy images in closed popups never load, so only wait for the eager ones
+const imgLoad = imagesLoaded(content.querySelectorAll('img:not([loading="lazy"])'));
 const loadingWrap = document.querySelector('.loading-wrap');
 const loadingItems = loadingWrap.querySelectorAll('.loading__item');
 const fadeInItems = document.querySelectorAll('.loading__fade');
@@ -68,7 +69,7 @@ function startLoader() {
 }
 startLoader();
 
-imgLoad.on('done', instance => {
+imgLoad.on('always', instance => {
   hideLoader();
   pageAppearance();
 });
@@ -386,9 +387,9 @@ gsap.to("[data-speed]", {
 // --------------------------------------------- //
 // Swiper Slider Start
 // --------------------------------------------- //
-const testimonialsSlider = document.querySelector("testimonials-slider");
+const testimonialsSlider = document.querySelector(".swiper-testimonials");
 
-if (!testimonialsSlider) {
+if (testimonialsSlider) {
   const swiper = new Swiper('.swiper-testimonials', {
     slidesPerView: 1,
     spaceBetween: 20,

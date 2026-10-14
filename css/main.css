@@ -205,7 +205,7 @@
 }
 
 .about-image-1 {
-  background-image: url("../img/backgrounds/Opeyemi.png");
+  background-image: url("../img/backgrounds/Opeyemi.webp");
 }
 
 .marquee-image-single-1 {
@@ -233,19 +233,19 @@
 }
 
 .portfolio-item-1 {
-  background-image: url("../img/avatars/main-banner-kazibridge.png");
+  background-image: url("../img/avatars/main-banner-kazibridge.webp");
 }
 
 .portfolio-item-2 {
-  background-image: url("../img/avatars/main-banner-cloudclinic.png");
+  background-image: url("../img/avatars/main-banner-cloudclinic.webp");
 }
 
 .portfolio-item-3 {
-  background-image: url("../img/avatars/main-banner-cazuku.png");
+  background-image: url("../img/avatars/main-banner-cazuku.webp");
 }
 
 .portfolio-item-4 {
-  background-image: url("../img/avatars/main-banner-efcc.png");
+  background-image: url("../img/avatars/main-banner-efcc.webp");
 }
 
 .portfolio-item-5 {
@@ -6967,4 +6967,40 @@ form textarea:required:valid {
 }
 /* ------------------------------------------------*/
 /* Portfolio Card Background Video End */
+/* ------------------------------------------------*/
+
+/* ------------------------------------------------*/
+/* Hero Typed Text Start */
+/* ------------------------------------------------*/
+/* an invisible copy of the final text holds the space, so the headline
+   doesn't get pushed up as the subtitle types out */
+.animated-type {
+  display: grid;
+}
+.animated-type .typed-ghost,
+.animated-type .typed-live {
+  grid-area: 1 / 1;
+}
+.animated-type .typed-ghost {
+  visibility: hidden;
+}
+/* on shorter desktop windows, scale the 3-line headline with the viewport
+   height so it doesn't grow up into the nav */
+@media only screen and (min-width: 1200px) {
+  .headline-95-desktop .headline__title {
+    font-size: min(9rem, 11.5vh);
+  }
+}
+@media only screen and (min-width: 1400px) {
+  .headline-95-desktop .headline__title {
+    font-size: min(10.2rem, 11.5vh);
+  }
+}
+@media only screen and (min-width: 1600px) {
+  .headline-95-desktop .headline__title {
+    font-size: min(12.8rem, 11.5vh);
+  }
+}
+/* ------------------------------------------------*/
+/* Hero Typed Text End */
 /* ------------------------------------------------*/

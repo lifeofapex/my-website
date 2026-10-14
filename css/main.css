@@ -15,7 +15,7 @@
  * ------------------------------------------------
  *  01. Fonts
  *  02. Variables
- *  03. Template Backgrounds
+ *  03. Section Backgrounds
  *  04. Basic Styles
  *  05. Animations - Transitions
  *  06. Animations - Backgrounds
@@ -194,42 +194,10 @@
 /* Variables End */
 /* ------------------------------------------------*/
 /* ------------------------------------------------*/
-/* Template Backgrounds Start */
+/* Section Backgrounds Start */
 /* ------------------------------------------------*/
-.main-image-1 {
-  background-image: url("https://dummyimage.com/1400x1000/414141/636363");
-}
-
-.main-image-2 {
-  background-image: url("https://dummyimage.com/1920x1080/414141/636363");
-}
-
 .about-image-1 {
   background-image: url("../img/backgrounds/Opeyemi.webp");
-}
-
-.marquee-image-single-1 {
-  background-image: url("https://dummyimage.com/1000x1300/4d4d4d/636363");
-}
-
-.marquee-image-single-2 {
-  background-image: url("https://dummyimage.com/1000x1300/4d4d4d/636363");
-}
-
-.marquee-image-single-3 {
-  background-image: url("https://dummyimage.com/1000x1300/4d4d4d/636363");
-}
-
-.marquee-image-single-4 {
-  background-image: url("https://dummyimage.com/1000x1300/4d4d4d/636363");
-}
-
-.marquee-image-single-5 {
-  background-image: url("https://dummyimage.com/1000x1300/4d4d4d/636363");
-}
-
-.marquee-image-single-6 {
-  background-image: url("https://dummyimage.com/1000x1300/4d4d4d/636363");
 }
 
 .portfolio-item-1 {
@@ -248,36 +216,8 @@
   background-image: url("../img/avatars/main-banner-efcc.webp");
 }
 
-.portfolio-item-5 {
-  background-image: url("https://dummyimage.com/1600x1200/686868/737373");
-}
-
-.portfolio-item-6 {
-  background-image: url("https://dummyimage.com/1600x1200/414141/636363");
-}
-
-.portfolio-item-7 {
-  background-image: url("https://dummyimage.com/1600x1200/686868/737373");
-}
-
-.portfolio-item-8 {
-  background-image: url("https://dummyimage.com/1600x1200/414141/636363");
-}
-
-.project-image-bg-1 {
-  background-image: url("https://dummyimage.com/1920x1280/4d4d4d/636363");
-}
-
-.project-image-bg-2 {
-  background-image: url("https://dummyimage.com/1920x1080/4d4d4d/636363");
-}
-
-.project-image-bg-3 {
-  background-image: url("https://dummyimage.com/1920x1080/4d4d4d/636363");
-}
-
 /* ------------------------------------------------*/
-/* Template Backgrounds End */
+/* Section Backgrounds End */
 /* ------------------------------------------------*/
 /* ------------------------------------------------*/
 /* Basic Styles Start */
